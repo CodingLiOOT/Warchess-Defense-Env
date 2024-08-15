@@ -1,0 +1,53 @@
+{
+    "num_drone": 10,
+    "num_soldier": 80,
+    "unit_num_per_step": 15,
+    "minimum_unit_evacuated": 5,
+    "num_flak": 3,
+    "num_far_turret": 6,
+    "num_near_turrer": 6,
+    "flak_health": 1500,
+    "flak_attack": 100,
+    "flak_attack_range": [
+        0,
+        30
+    ],
+    "flak_accuracy": 0.7,
+    "flak_ammunition": 100,
+    "near_turret_health": 200,
+    "near_turret_attack": 50,
+    "near_turret_angle": 270,
+    "near_turret_attack_range": [
+        0,
+        20
+    ],
+    "near_turret_accuracy": 0.5,
+    "near_turret_ammunition": 100,
+    "far_turret_health": 200,
+    "far_turret_attack": 50,
+    "far_turret_angle": 360,
+    "far_turret_attack_range": [
+        5,
+        30
+    ],
+    "far_turret_accuracy": 0.7,
+    "far_turret_ammunition": 100,
+    "drone_health": 30,
+    "drone_mobility": 3,
+    "drone_attack": 50,
+    "drone_attack_range": [
+        0,
+        25
+    ],
+    "drone_accuracy": 0.9,
+    "drone_ammunition": 100,
+    "soldier_health": 100,
+    "soldier_mobility": 1,
+    "soldier_attack": 20,
+    "soldier_attack_range": [
+        0,
+        20
+    ],
+    "soldier_accuracy": 0.7,
+    "soldier_ammunition": 200
+}

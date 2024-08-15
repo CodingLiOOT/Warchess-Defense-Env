@@ -11,40 +11,52 @@ class StoneSoldier(BaseStone):
     attack_arrage是一个长度为2的list。分别代表最近打击距离和最远打击距离
     '''
 
-    def __init__(self,
-                 name,
-                 posx,
-                 posy,
-                 route=[],
-                 reward=-1,
-                 mobility=1,
-                 health=10,
-                 attack=1,
-                 attack_range=[1, 5],
-                 accuracy=0.9,
-                 ammunition=45):
-        BaseStone.__init__(self,
-                           health=health,
-                           mobility=mobility,
-                           stone_type='soldier',
-                           name=name,
-                           reward=reward,
-                           posx=posx,
-                           posy=posy,
-                           route=route,
-                           attack=attack,
-                           accuracy=accuracy,
-                           attack_range=attack_range,
-                           ammunition=ammunition)
+    def __init__(
+        self,
+        name,
+        posx,
+        posy,
+        route=[],
+        reward=-1,
+        mobility=1,
+        health=10,
+        attack=1,
+        attack_range=[1, 5],
+        accuracy=0.9,
+        ammunition=45,
+    ):
+        BaseStone.__init__(
+            self,
+            health=health,
+            mobility=mobility,
+            stone_type='soldier',
+            name=name,
+            reward=reward,
+            posx=posx,
+            posy=posy,
+            route=route,
+            attack=attack,
+            accuracy=accuracy,
+            attack_range=attack_range,
+            ammunition=ammunition,
+        )
 
         self.image = pg.image.load('image/icons8-soldier-64.png')
-        self.color = [(204, 153, 255, 128), (178, 102, 255, 128),
-                      (153, 51, 255, 128), (128, 0, 255, 128),
-                      (102, 0, 204, 128), (76, 0, 153, 128), (51, 0, 102, 128),
-                      (25, 0, 51, 128), (0, 0, 255, 128), (0, 0, 153, 128)]
+        self.color = [
+            (204, 153, 255, 128),
+            (178, 102, 255, 128),
+            (153, 51, 255, 128),
+            (128, 0, 255, 128),
+            (102, 0, 204, 128),
+            (76, 0, 153, 128),
+            (51, 0, 102, 128),
+            (25, 0, 51, 128),
+            (0, 0, 255, 128),
+            (0, 0, 153, 128),
+        ]
 
     def is_enemy_in_range(self, ex, ey):
-        distance = math.sqrt(((self.posx - ex)**2 + (self.posy - ey)**2))
+        distance = math.sqrt(((self.posx - ex) ** 2 + (self.posy - ey) ** 2))
         return self.attack_range[0] <= distance <= self.attack_range[1]
 
     def attack_check(self, enemys):
@@ -70,8 +82,7 @@ class StoneSoldier(BaseStone):
                 # 攻击距离自身最近的敌人
                 x, y = enemy.get_pos()
                 if self.is_enemy_in_range(x, y):
-                    distance = math.sqrt(
-                        ((self.posx - x)**2 + (self.posy - y)**2))
+                    distance = math.sqrt(((self.posx - x) ** 2 + (self.posy - y) ** 2))
                     if distance < min_distance:
                         min_distance = distance
                         target = enemy.get_name()

@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger()
 
 
-class BaseStone():
+class BaseStone:
     """
     棋子类的基类
     Args:
@@ -19,20 +19,22 @@ class BaseStone():
         ammunition:弹药量,-1为无限弹药
     """
 
-    def __init__(self,
-                 name='',
-                 stone_type='',
-                 posx=0,
-                 posy=0,
-                 route=[],
-                 reward=-1,
-                 mobility=1,
-                 health=10,
-                 attack=1,
-                 attack_range=[0, 5],
-                 ammunition=-1,
-                 direction=[-1],
-                 accuracy=0.9):
+    def __init__(
+        self,
+        name='',
+        stone_type='',
+        posx=0,
+        posy=0,
+        route=[],
+        reward=-1,
+        mobility=1,
+        health=10,
+        attack=1,
+        attack_range=[0, 5],
+        ammunition=-1,
+        direction=[-1],
+        accuracy=0.9,
+    ):
         self.name = name
         self.stone_type = stone_type
 

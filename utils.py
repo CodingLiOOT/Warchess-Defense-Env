@@ -128,8 +128,7 @@ def get_move_sequence(x, y, x2, y2):
         directions.append(direction)
         path.append((x, y))
         x, y = unit_move(x, y, direction)
-    assert (x == x2 and y == y2), "src:{}, dst:{}\npath:{}".format(
-        (x, y), (x2, y2), path)
+    assert x == x2 and y == y2, "src:{}, dst:{}\npath:{}".format((x, y), (x2, y2), path)
     return directions, path
 
 
@@ -172,7 +171,7 @@ def manhattan_distance(p1, p2):
 
 
 def euclidean_distance(p1, p2):
-    return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
+    return ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
 
 
 def mix_colors(colors):

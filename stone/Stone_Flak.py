@@ -10,34 +10,38 @@ class StoneFlak(BaseStone):
     子类
     '''
 
-    def __init__(self,
-                 name,
-                 posx,
-                 posy,
-                 reward,
-                 health=20,
-                 attack=1,
-                 attack_range=[0, 10],
-                 accuracy=0.9,
-                 ammunition=200):
-        super().__init__(health=health,
-                         mobility=0,
-                         stone_type='flak',
-                         name=name,
-                         reward=reward,
-                         posx=posx,
-                         posy=posy,
-                         route=[],
-                         attack=attack,
-                         accuracy=accuracy,
-                         attack_range=attack_range,
-                         ammunition=ammunition)
+    def __init__(
+        self,
+        name,
+        posx,
+        posy,
+        reward,
+        health=20,
+        attack=1,
+        attack_range=[0, 10],
+        accuracy=0.9,
+        ammunition=200,
+    ):
+        super().__init__(
+            health=health,
+            mobility=0,
+            stone_type='flak',
+            name=name,
+            reward=reward,
+            posx=posx,
+            posy=posy,
+            route=[],
+            attack=attack,
+            accuracy=accuracy,
+            attack_range=attack_range,
+            ammunition=ammunition,
+        )
 
         self.image = pg.image.load('image/icons8-missile-base-96.png')
         self.color = [(255, 51, 51, 128)]
 
     def is_enemy_in_range(self, ex, ey):
-        distance = math.sqrt(((self.posx - ex)**2 + (self.posy - ey)**2))
+        distance = math.sqrt(((self.posx - ex) ** 2 + (self.posy - ey) ** 2))
         return self.attack_range[0] <= distance <= self.attack_range[1]
 
     def attack_check(self, enemys):

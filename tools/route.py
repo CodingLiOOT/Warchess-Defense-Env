@@ -112,7 +112,7 @@
 # # def is_away_from_end(p1, p2, end):
 # #     """
 # #     检查从当前点移动到下一个点是否远离终点。
-    
+
 # #     :param p1: 当前点 (x, y)
 # #     :param p2: 下一个点 (x, y)
 # #     :param end: 终点 (x, y)
@@ -342,7 +342,7 @@
 #     start_points = []
 #     path_points = []
 #     evac_points = []
-    
+
 #     for y in range(len(map_data)):
 #         for x in range(len(map_data[0])):
 #             if map_data[y][x] == 4:
@@ -351,7 +351,7 @@
 #                 path_points.append((x, y))  # 路径点
 #             elif map_data[y][x] == 5:
 #                 evac_points.append((x, y))  # 撤离点
-    
+
 #     return start_points, path_points, evac_points
 
 # # 检查是否是有效的移动
@@ -367,34 +367,34 @@
 #     while current_pos != end:
 #         x_diff = end[0] - current_pos[0]
 #         y_diff = end[1] - current_pos[1]
-        
+
 #         direction = None
 #         if abs(x_diff) >= abs(y_diff):
 #             direction = 3 if x_diff > 0 else 7
 #         else:
 #             direction = 5 if y_diff > 0 else 1
-        
+
 #         next_pos = _move(current_pos[0], current_pos[1], direction)
 #         path.append(direction)
 #         current_pos = next_pos
-    
+
 #     return path
 
 # # 生成从起始点到路径点，再到撤离点的路径
 # def generate_straight_paths(map_data, start_points, path_points, evac_points):
 #     routes = []
-    
+
 #     for start in start_points:
 #         for path_point in path_points:
 #             for evac_point in evac_points:
 #                 # 生成从起始点到路径点，再到撤离点的路径
 #                 route1 = generate_path_between_points(start, path_point)
 #                 route2 = generate_path_between_points(path_point, evac_point)
-                
+
 #                 if route1 and route2:
 #                     final_route = route1 + route2
 #                     routes.append((final_route, start))
-    
+
 #     return routes
 
 # # 转换路径结构为指定格式
@@ -417,9 +417,9 @@
 # def generate_routes(filepath):
 #     map_data = parse_map(filepath)
 #     start_points, path_points, evac_points = find_points(map_data)
-    
+
 #     all_routes = generate_straight_paths(map_data, start_points, path_points, evac_points)
-    
+
 #     result = convert_structure(all_routes)
 #     return result
 
@@ -437,6 +437,7 @@
 # print(f"路径已保存到: {output_file_path}")
 import json
 import copy
+
 
 def _move(x, y, direction):
     if direction == 1:
@@ -461,10 +462,16 @@ def _move(x, y, direction):
         y -= 1  # 左上
     return (x, y)
 
+
 def is_valid_position(x, y, map_data):
     if 0 <= x < len(map_data[0]) and 0 <= y < len(map_data):
-        return map_data[y][x] in [0, 5, 6]  # 允许通过的位置：0（道路），5（撤离点），6（路径点）
+        return map_data[y][x] in [
+            0,
+            5,
+            6,
+        ]  # 允许通过的位置：0（道路），5（撤离点），6（路径点）
     return False
+
 
 def detect_invalid_path(path, start, N=10, M=4):
     current_pos = start
@@ -484,8 +491,10 @@ def detect_invalid_path(path, start, N=10, M=4):
 
     return False
 
+
 def manhattan_distance(pos1, pos2):
     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
 
 def filter_paths(input_filepath, output_filepath):
     with open(input_filepath, 'r', encoding='utf-8') as infile:
@@ -496,19 +505,16 @@ def filter_paths(input_filepath, output_filepath):
     for route in data['routes']:
         start = tuple(route['start'])
         valid_paths = []
-        
+
         for path in route['path']:
             # 使用路径的深拷贝进行处理，避免原始数据被修改
             path_copy = copy.deepcopy(path)
             if not detect_invalid_path(path_copy, start):
                 valid_paths.append(path)
-                cnt+=1
+                cnt += 1
 
         if valid_paths:
-            filtered_routes.append({
-                'start': start,
-                'path': valid_paths
-            })
+            filtered_routes.append({'start': start, 'path': valid_paths})
 
     filtered_data = {'routes': filtered_routes}
     print(f"合格路径数量: {cnt}")

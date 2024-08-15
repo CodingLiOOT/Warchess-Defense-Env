@@ -21,35 +21,39 @@ class StoneNearTurret(BaseStone):
         5: 90,  # 下
         6: 135,  # 左下
         7: 180,  # 左
-        8: 225  # 左上
+        8: 225,  # 左上
     }
 
-    def __init__(self,
-                 name,
-                 posx,
-                 posy,
-                 reward,
-                 health=2000,
-                 attack=1,
-                 angle=270,
-                 angle_start=20,
-                 angle_end=180,
-                 attack_range=[1, 5],
-                 direction=[0],
-                 accuracy=0.9,
-                 ammunition=100):
-        super().__init__(health=health,
-                         mobility=0,
-                         stone_type='near_turret',
-                         name=name,
-                         reward=reward,
-                         posx=posx,
-                         posy=posy,
-                         route=[],
-                         attack=attack,
-                         accuracy=accuracy,
-                         attack_range=attack_range,
-                         ammunition=ammunition)
+    def __init__(
+        self,
+        name,
+        posx,
+        posy,
+        reward,
+        health=2000,
+        attack=1,
+        angle=270,
+        angle_start=20,
+        angle_end=180,
+        attack_range=[1, 5],
+        direction=[0],
+        accuracy=0.9,
+        ammunition=100,
+    ):
+        super().__init__(
+            health=health,
+            mobility=0,
+            stone_type='near_turret',
+            name=name,
+            reward=reward,
+            posx=posx,
+            posy=posy,
+            route=[],
+            attack=attack,
+            accuracy=accuracy,
+            attack_range=attack_range,
+            ammunition=ammunition,
+        )
 
         self.direction = direction  # 朝向列表
         self.angle = angle  # 攻击角度
@@ -57,8 +61,8 @@ class StoneNearTurret(BaseStone):
         self.angle_end = angle_end  # 攻击最终边界角度
         # 根据角度差值计算每回合攻击次数
         angle_diff = abs(self.angle_end - self.angle_start)
-        self.attacks_per_turn = max(1, 5 - (angle_diff // 72))  
-        
+        self.attacks_per_turn = max(1, 5 - (angle_diff // 72))
+
         self.image = pg.image.load('image/icons8-rifle-64.png')
         self.color = [(255, 102, 102, 128)]
 
@@ -103,7 +107,9 @@ class StoneNearTurret(BaseStone):
             return False
 
         # 计算敌人相对于防御塔的角度
-        enemy_angle = math.degrees(math.atan2(dx, -dy))  # 调整计算方式，以Y轴正方向为0度，顺时针为正
+        enemy_angle = math.degrees(
+            math.atan2(dx, -dy)
+        )  # 调整计算方式，以Y轴正方向为0度，顺时针为正
         if enemy_angle < 0:
             enemy_angle += 360  # 确保角度在0到360度之间
 
@@ -116,7 +122,6 @@ class StoneNearTurret(BaseStone):
             return angle_start <= enemy_angle <= angle_end
         else:
             return enemy_angle >= angle_start or enemy_angle <= angle_end
-
 
     # def attack_check(self, enemys):
     #     '''
@@ -154,8 +159,8 @@ class StoneNearTurret(BaseStone):
     #             damage = self.attack if hit else 0
 
     #     return target, damage
-    
-    def attack_check(self, enemys,health_record):
+
+    def attack_check(self, enemys, health_record):
         '''
         找到enemys列表中在攻击范围内且最近的敌人，并对其进行多次打击。
 
@@ -179,7 +184,7 @@ class StoneNearTurret(BaseStone):
                         continue
                     if enemy.get_stone_type() in ['drone']:  # 跳过无人机
                         continue
-                    if health_record[enemy.get_name()]<=0:
+                    if health_record[enemy.get_name()] <= 0:
                         continue
                     x, y = enemy.get_pos()
                     # 攻击距离撤离点最近的敌人
@@ -196,13 +201,8 @@ class StoneNearTurret(BaseStone):
                     damage = self.attack if hit else 0
                     total_damage.append(damage)
                     targets.append(target.get_name())
-                    health_record[target.get_name()]-=damage
+                    health_record[target.get_name()] -= damage
 
         # print(f'targets:{targets}')
         # print(f'total_damage:{total_damage}')
         return targets, total_damage
-
-
-
-
-

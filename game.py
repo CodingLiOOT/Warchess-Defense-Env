@@ -203,7 +203,9 @@ class RedBlueBattleEnv(gym.Env):
         # profiler = cProfile.Profile()
         # profiler.enable()
 
-        result, blue_dead, blue_evacuated, blue_team_sum_distance, red_dead = self.simulator.simulate_battle()
+        result, blue_dead, blue_evacuated, blue_team_sum_distance, red_dead, steps = (
+            self.simulator.simulate_battle()
+        )
 
         # profiler.disable()
         # stats = pstats.Stats(profiler).sort_stats('cumulative')
@@ -215,19 +217,20 @@ class RedBlueBattleEnv(gym.Env):
         distance_weight = -0.1
         red_dead_weight = -1.0
 
-        # 根据游戏结果调整奖励或惩罚
-        if result == 0:
-            # 游戏超时，根据情况给予小的惩罚或奖励
-            reward += 10
-        elif result == 1:
-            # 红方胜利，给予大奖励
-            reward += 100
-        elif result == 2:
-            # 蓝方全部撤离，给予惩罚
-            reward += -100
-        elif result == 3:
-            # 红方全部被摧毁，给予大惩罚
-            reward += -100
+        # # 根据游戏结果调整奖励或惩罚
+        # if result == 0:
+        #     # 游戏超时，根据情况给予小的惩罚或奖励
+        #     # reward += 10
+        #     pass
+        # elif result == 1:
+        #     # 红方胜利，给予大奖励
+        #     reward += 100
+        # elif result == 2:
+        #     # 蓝方全部撤离，给予惩罚
+        #     reward += -100
+        # elif result == 3:
+        #     # 红方全部被摧毁，给予大惩罚
+        #     reward += -100
         reward_detail = []
         reward_detail.append(reward)
         reward_detail.append(blue_dead * dead_weight)
@@ -242,7 +245,7 @@ class RedBlueBattleEnv(gym.Env):
         # reward += (blue_dead * dead_weight +
         #            blue_evacuated * evacuated_weight +
         #            red_dead * red_dead_weight)
-        reward += 10 * blue_evacuated
+        reward = -10 * blue_evacuated + -0.1 * min(0, steps - 120)
         self.done = True
         self.steps += 1
 

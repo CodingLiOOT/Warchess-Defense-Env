@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 import time
 
 import numpy as np
@@ -39,13 +40,13 @@ def train(model, env, save_dir, is_render=False):
     init_logger(log_dir)
     logger = get_logger('train')
     # 训练
-    num_episodes = 12800
+    num_episodes = 6400
     # 滑动平均值列表
     rewards_per_episode = []
     win_rates = []
 
     for episode in range(num_episodes):
-        state = env.reset(2)
+        state = env.reset(random.randint(0, 2))
         total_reward = 0
         done = False
         while not done:
@@ -108,10 +109,10 @@ def test(model, env, device):
                     succes_cnt += 1
         return succes_cnt
 
-    success_cnt0 = test_one_style(0, 1000, env, model)
-    success_cnt1 = test_one_style(1, 1000, env, model)
-    success_cnt2 = test_one_style(2, 1000, env, model)
-    success_cnt3 = test_one_style(3, 1000, env, model)
+    success_cnt0 = test_one_style(0, 100, env, model)
+    success_cnt1 = test_one_style(1, 100, env, model)
+    success_cnt2 = test_one_style(2, 100, env, model)
+    success_cnt3 = test_one_style(3, 100, env, model)
     print(
         f'''
     风格0：平均胜率{success_cnt0/10}%（千轮）

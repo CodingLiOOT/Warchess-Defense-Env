@@ -1272,25 +1272,31 @@ class WarChessGame(object):
             self.logger.info('Blue team evacuated: ' + ','.join(sorted(blue_evacuated_name)))
             self.logger.info('Blue team dead: ' + ','.join(sorted(blue_dead_name)))
 
-            # Endding
-            if self.step > 300:
-                # self.logger.fatal('Timeout')
+            if self.step > 400:
                 result = 0
                 break
-            if self.blue_team_unit_num - blue_dead - 10 < self.config['minimum_unit_evacuated']:
-                # self.logger.fatal('The blue team unable to evacuate enough units.')
+            elif self.blue_team_unit_num - blue_dead <= 0:
                 result = 1
                 break
-            if blue_evacuated >= self.config['minimum_unit_evacuated']:
-                # self.logger.fatal('The blue team has been evacuated.')
-                result = 2
-                break
-            if red_dead == self.red_team_unit_num:
-                # self.logger.fatal('The red team is eliminated.')
-                result = 3
-                break
+            # # Endding
+            # if self.step > 300:
+            #     # self.logger.fatal('Timeout')
+            #     result = 0
+            #     break
+            # if self.blue_team_unit_num - blue_dead - 10 < self.config['minimum_unit_evacuated']:
+            #     # self.logger.fatal('The blue team unable to evacuate enough units.')
+            #     result = 1
+            #     break
+            # if blue_evacuated >= self.config['minimum_unit_evacuated']:
+            #     # self.logger.fatal('The blue team has been evacuated.')
+            #     result = 2
+            #     break
+            # if red_dead == self.red_team_unit_num:
+            #     # self.logger.fatal('The red team is eliminated.')
+            #     result = 3
+            #     break
 
-        return result, blue_dead, blue_evacuated, blue_team_sum_distance, red_dead
+        return result, blue_dead, blue_evacuated, blue_team_sum_distance, red_dead,self.step
 
 
 if __name__ == "__main__":

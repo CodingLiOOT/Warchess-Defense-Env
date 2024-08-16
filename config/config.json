@@ -29,7 +29,7 @@
   "drone_attack_range": [0, 25],
   "drone_accuracy": 0.9,
   "drone_ammunition": 100,
-  "soldier_health": 150,
+  "soldier_health": 100,
   "soldier_mobility": 1,
   "soldier_attack": 20,
   "soldier_attack_range": [0, 25],

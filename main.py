@@ -23,6 +23,7 @@ def select_device():
     Returns:
         device (torch.device): 选择的装备
     """
+    return torch.device("cpu")
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         return torch.device("mps")
     elif torch.cuda.is_available():
@@ -79,12 +80,46 @@ def train(model, env, save_dir, is_render=False):
             # print(f'Episode {episode + 1}: Total Reward = {total_reward}')
             logger.info(f'Progress Update - Episode {episode+1}')
         if (episode + 1) % 1024 == 0:
-            model.save(save_dir, 'ppo_model' + str(episode + 1))
+            model.save(save_dir, 'ppo_model_' + str(episode + 1))
             logger.info(f'Model saved after {episode+1} episodes')
+    close_writer()
+    model.save(save_dir, 'ppo_model_final')
+    logger.info('Model saved after training')
 
 
 def test(model, env, device):
-    pass
+    def test_one_style(style, num_simulation, env, model):
+        import random
+
+        succes_cnt = 0
+        for i in range(num_simulation):
+            if style == 3:
+                state = env.reset(random.randint(0, 2))
+            else:
+                state = env.reset(style)
+            done = False
+            while not done:
+                map_input = state['map']
+                enemy_vector = state['enemy_triples']
+                action, log_probs = model.select_action(state)
+                next_state, reward, done, result, reward_detail = env.step(action)
+                if result == 1:
+                    print(f'风格{style}：第{i}轮胜利')
+                    succes_cnt += 1
+        return succes_cnt
+
+    success_cnt0 = test_one_style(0, 1000, env, model)
+    success_cnt1 = test_one_style(1, 1000, env, model)
+    success_cnt2 = test_one_style(2, 1000, env, model)
+    success_cnt3 = test_one_style(3, 1000, env, model)
+    print(
+        f'''
+    风格0：平均胜率{success_cnt0/10}%（千轮）
+    风格1：平均胜率{success_cnt1/10}%（千轮）
+    风格2：平均胜率{success_cnt2/10}%（千轮）
+    混合：平均胜率{success_cnt3/10}%（千轮）
+      '''
+    )
 
 
 def main(args):
@@ -114,11 +149,13 @@ def main(args):
         os.makedirs(save_dir, exist_ok=True)
         train(model, env, save_dir, device)
     elif args.mode == "test":
-        if save_dir is None:
+        if args.save_dir is None:
             raise ValueError("save_dir must be provided in test mode")
-        model.load(
-            os.path.join(save_dir, "model.pth"),
-            os.path.join(save_dir, "optimizer.pth"),
+        model.actor = torch.load(
+            os.path.join(args.save_dir, "ppo_model_final_actor.pth"), map_location=device
+        )
+        model.critic = torch.load(
+            os.path.join(args.save_dir, "ppo_model_final_critic.pth"), map_location=device
         )
         test(model, env, device)
 

@@ -1,12 +1,11 @@
+import random
+
 import gym
-from gym import spaces
 import numpy as np
+from gym import spaces
 
 import utils
 from warchess import WarChessGame
-import random
-import cProfile
-import pstats
 
 
 class RedBlueBattleEnv(gym.Env):
@@ -21,15 +20,11 @@ class RedBlueBattleEnv(gym.Env):
 
         self.grid_width = self.simulator.get_map_width()
         self.grid_height = self.simulator.get_map_height()
-        self.deployment_points = [
-            utils.xy2idx(x, y) for x, y in self.simulator.deployment_points
-        ]
+        self.deployment_points = [utils.xy2idx(x, y) for x, y in self.simulator.deployment_points]
         self.num_grids = self.grid_width * self.grid_height
 
         # 格子坐标
-        self.coords = np.array(
-            [(x, y) for x in range(self.grid_width) for y in range(self.grid_height)]
-        )
+        self.coords = np.array([(x, y) for x in range(self.grid_width) for y in range(self.grid_height)])
 
         # 定义每个属性的最小值和最大值
         self.low = np.zeros((self.num_grids, 9), dtype=np.int32)
@@ -62,18 +57,14 @@ class RedBlueBattleEnv(gym.Env):
         # 蓝方死亡单位数量
         self.high[:, 8] = self.simulator.blue_team_unit_num
 
-        self.observation_space = spaces.Box(
-            low=self.low, high=self.high, dtype=np.int32
-        )
+        self.observation_space = spaces.Box(low=self.low, high=self.high, dtype=np.int32)
 
         # 动作空间：炮塔类型（0到2），炮塔放置的坐标编号 (x, y)，以及朝向（0到8);
         red_team_unit_num = self.simulator.red_team_unit_num
         deployment_points_num = len(self.deployment_points)
         # self.action_space = spaces.MultiDiscrete([deployment_points_num, 8] *
         #                                          red_team_unit_num)
-        self.action_space = spaces.MultiDiscrete(
-            [deployment_points_num] * red_team_unit_num
-        )
+        self.action_space = spaces.MultiDiscrete([deployment_points_num] * red_team_unit_num)
 
         self.reset()
 
@@ -212,9 +203,7 @@ class RedBlueBattleEnv(gym.Env):
         # profiler = cProfile.Profile()
         # profiler.enable()
 
-        result, blue_dead, blue_evacuated, blue_team_sum_distance, red_dead = (
-            self.simulator.simulate_battle()
-        )
+        result, blue_dead, blue_evacuated, blue_team_sum_distance, red_dead = self.simulator.simulate_battle()
 
         # profiler.disable()
         # stats = pstats.Stats(profiler).sort_stats('cumulative')
@@ -265,31 +254,8 @@ class RedBlueBattleEnv(gym.Env):
 
 if __name__ == "__main__":
     env = RedBlueBattleEnv()
-    env.render()
-
-    # action = env.action_space.sample()  # 随机生成一个动作
-    # print(f"Action: {action}")
-    deployment_points_num = 40
-    NearTurret_num = 6
-    FarTurret_num = 6
-    angle_start = 6
-    Near_range = 5
-    Far_range = 6
-    cnt = 0
-    for _ in range(100):
-        action_dim = spaces.MultiDiscrete(
-            [deployment_points_num, angle_start, Near_range] * NearTurret_num
-            + [deployment_points_num, angle_start, Far_range] * FarTurret_num
-        )
-        action = action_dim.sample()
-        print("Random Action:", action)
-
-        type = random.randint(0, 2)
-        state = env.reset(type)
-        next_state, reward, done, result, reward_detail = env.step(action)
-        if result == 1:
-            cnt += 1
-        # print(f"Reward: {reward}, Done: {done}")
-    print(cnt)
-    # state, reward, done, _, _ = env.step(action)
-    # env.render()
+    state_len = []
+    for i in range(100):
+        state = env.reset(random.randint(0, 2))
+        state_len.append(state['enemy_triples'].shape[0])
+    print(state_len)

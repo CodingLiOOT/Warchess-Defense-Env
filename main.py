@@ -1,14 +1,21 @@
+import argparse
 import os
 import time
-import torch
-import argparse
-import random
+
 import numpy as np
+import torch
 import torch.backends
-from PPO import PPO  # 确保 PPO.py 文件中的类可以被正确导入
-from game import RedBlueBattleEnv  # 确保 game.py 文件中的环境可以被正确导入
 from gym import spaces
-from tools.logging_utils import init_logger, get_logger, init_writer, log_scalar, close_writer
+
+from game import RedBlueBattleEnv  # 确保 game.py 文件中的环境可以被正确导入
+from PPO import PPO  # 确保 PPO.py 文件中的类可以被正确导入
+from tools.logging_utils import (
+    close_writer,
+    get_logger,
+    init_logger,
+    init_writer,
+    log_scalar,
+)
 
 
 def select_device():
@@ -41,12 +48,16 @@ def train(model, env, save_dir, is_render=False):
         total_reward = 0
         done = False
         while not done:
-            map_input = state['map']
-            enemy_vector = state['enemy_triples']
-            action, log_probs = model.select_action(map_input, enemy_vector)
+            action, buffer_tuple = model.select_action(state)
             next_state, reward, done, result, reward_detail = env.step(action)
             total_reward += reward
-            model.buffer.add(state, action, log_probs, reward, done)
+            split_reward = reward / 12.0
+            for i in range(12):
+                single_state, single_action, single_log_probs, single_reward, single_done = buffer_tuple[i]
+                single_reward = split_reward
+                if i == 11:
+                    single_done = True
+                model.buffer.add(single_state, single_action, single_log_probs, single_reward, single_done)
             logger.info(f'Episode{episode+1},Reward:{reward},Result:{result}')
             # logger.debug(
             #     f'Episode {episode+1}, Reward: {reward}, Done: {done}, Winloss reward: {reward_detail[0]}, Blue dead reward: {reward_detail[1]}, Blue evacuated reward: {reward_detail[2]}, Red dead reward: {reward_detail[3]}'
@@ -63,11 +74,11 @@ def train(model, env, save_dir, is_render=False):
             log_scalar('Average Win Rate', averaged_win_rate, episode + 1)
             log_scalar('Average Reward', averaged_reward, episode + 1)
 
-        if (episode + 1) % 64 == 0:
+        if (episode + 1) % 16 == 0:
             model.update()  # 更新模型
             # print(f'Episode {episode + 1}: Total Reward = {total_reward}')
             logger.info(f'Progress Update - Episode {episode+1}')
-        if (episode + 1) % 1000 == 0:
+        if (episode + 1) % 1024 == 0:
             model.save(save_dir, 'ppo_model' + str(episode + 1))
             logger.info(f'Model saved after {episode+1} episodes')
 
@@ -86,11 +97,12 @@ def main(args):
     # 初始化PPO
     model = PPO(
         map_channels=1,
-        enemy_vector_dim=294 + 20,
+        enemy_vector_dim=3 * 78 + 40 * 3,
         device=device,
-        action_space=spaces.MultiDiscrete([40, 6, 5] * 6 + [40, 6, 6] * 6),
+        action_space=spaces.MultiDiscrete([40, 6, 6]),
         gamma=0.99,
         K_epochs=4,
+        batch_size=16 * 12,
     )
 
     if args.mode == "train":

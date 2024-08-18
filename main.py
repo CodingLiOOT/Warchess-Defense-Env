@@ -24,7 +24,7 @@ def select_device():
     Returns:
         device (torch.device): 选择的装备
     """
-    return torch.device("cpu")
+    # return torch.device("cpu")
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         return torch.device("mps")
     elif torch.cuda.is_available():

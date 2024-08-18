@@ -233,9 +233,9 @@ class RedBlueBattleEnv(gym.Env):
         #     reward += -100
         reward_detail = []
         reward_detail.append(reward)
-        reward_detail.append(blue_dead * dead_weight)
-        reward_detail.append(blue_evacuated * evacuated_weight)
-        reward_detail.append(red_dead * red_dead_weight)
+        reward_detail.append(blue_dead)
+        reward_detail.append(blue_evacuated)
+        reward_detail.append(red_dead)
 
         # 根据蓝方死亡数量、撤离数量、距离总和和红方死亡数量计算额外奖励或惩罚
         # reward += (blue_dead * dead_weight +
